@@ -1,0 +1,64 @@
+from matplotlib import pyplot as plt
+import numpy as np
+from matplotlib import colors
+
+
+def arg(z: complex):
+    # renvoie l'argument d'un nombre entre -pi et pi
+    if z.real == 0:
+        return np.pi/2*np.sign(z.imag)
+    elif z.real<0 and z.imag >= 0:
+        return np.arctan(z.imag/z.real) + np.pi
+    elif z.real<0 and z.imag < 0:
+        return np.arctan(z.imag/z.real) - np.pi
+    return np.arctan(z.imag/z.real)
+
+def ma_fonction(z: complex):
+    return z**3 - 1.0j*z**4 - 3*z**6
+
+
+def f(func, arr):
+    new_arr = np.zeros_like(arr)
+    
+    for i_lig in range(len(arr)):
+        for i_col in range(len(arr[i_lig])):
+            new_arr[i_lig][i_col] = func(arr[i_lig][i_col])
+
+    return new_arr
+
+
+def main():
+    n = 500
+    n_levels = 1000 # number of different colors
+    size = 1
+
+    # create a mini complex-plane
+    x, y = np.meshgrid(np.linspace(-size, size, num=n), np.linspace(-size, size, num=n))
+    z = x + y*1.0j
+
+    f_z = f(ma_fonction, z)
+
+    argument = f(arg, f_z)
+    module = np.sqrt(np.square(f_z.real) + np.square(f_z.imag))
+    arg_levels = np.linspace(argument.min(), argument.max(), n_levels)
+    module_levels = np.linspace(module.min(), module.max(), n_levels)
+
+
+    # plot the contours
+    fig, axes = plt.subplots(ncols=2, figsize=(9, 4))
+    axes[0].contourf(x, y, argument, levels=arg_levels, cmap='plasma')
+    axes[1].contourf(x, y, module, levels=module_levels, norm=colors.LogNorm(vmin=0.000001, vmax=module.max()), cmap='plasma_r')
+
+    # set titles
+    axes[0].set_title("$arg(f(z))$")
+    axes[1].set_title("$|f(z)|$")
+
+    # label axes
+    axes[0].set_ylabel("$Im(z)$")
+    axes[0].set_xlabel("$Re(z)$")
+
+    plt.show()
+
+
+if __name__ == "__main__":
+    main()
