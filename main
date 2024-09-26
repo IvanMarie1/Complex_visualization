@@ -1,49 +1,72 @@
 from matplotlib import pyplot as plt
 import numpy as np
 from matplotlib import colors
+from typing import Callable
 
 
-def ma_fonction(z: complex):
+def my_function(z: complex) -> complex:
+    """
+    Computes a specific complex polynomial.
+    
+    Parameters:
+    z (complex): Input complex number.
+
+    Returns:
+    complex: Result of the polynomial computation.
+    """
     return z**3 - 1.0j*z**4 - 3*z**6
 
 
-def f(func, arr):
+def f(func: Callable[[complex], complex], arr: np.ndarray) -> np.ndarray:
+    """
+    Applies a function to each element of a numpy array.
+    
+    Parameters:
+    func (function): Function to apply.
+    arr (numpy.ndarray): Input array of complex numbers.
+
+    Returns:
+    numpy.ndarray: Array with the function applied to each element.
+    """
     vectorized_func = np.vectorize(func)
     return vectorized_func(arr)
 
 
-def main():
+def main() -> None:
+    """
+    Creates and plots the complex function visualization.
+    """
     n = 2000
-    n_levels = 100 # number of different colors
+    n_levels = 100 # Number of different colors
     size = 1
 
-    # create a mini complex-plane
+    # Create a grid of complex numbers
     x, y = np.meshgrid(np.linspace(-size, size, num=n), np.linspace(-size, size, num=n))
     z = x + y*1.0j
 
-    f_z = f(ma_fonction, z)
+    f_z = f(my_function, z)
 
+    # Calculate argument and magnitude
     argument = np.angle(f_z)
-    module = np.sqrt(np.square(f_z.real) + np.square(f_z.imag))
+    magnitude = np.sqrt(np.square(f_z.real) + np.square(f_z.imag))
     arg_levels = np.linspace(argument.min(), argument.max(), n_levels)
-    module_levels = np.linspace(module.min(), module.max(), n_levels)
+    magnitude_levels = np.linspace(magnitude.min(), magnitude.max(), n_levels)
 
 
-    # plot the contours
+    # Plot the contours
     fig, axes = plt.subplots(ncols=2, figsize=(9, 4))
     axes[0].contourf(x, y, argument, levels=arg_levels, cmap='plasma')
-    axes[1].contourf(x, y, module, levels=module_levels, norm=colors.PowerNorm(gamma=0.5), cmap='plasma_r')
+    axes[1].contourf(x, y, magnitude, levels=magnitude_levels, norm=colors.PowerNorm(gamma=0.5), cmap='plasma_r')
 
-    # set titles
+    # Set titles
     axes[0].set_title("$arg(f(z))$")
     axes[1].set_title("$|f(z)|$")
 
-    # label axes
+    # Label axes
     axes[0].set_ylabel("$Im(z)$")
     axes[0].set_xlabel("$Re(z)$")
 
     plt.show()
-
 
 if __name__ == "__main__":
     main()
