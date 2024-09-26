@@ -1,10 +1,13 @@
+"""
+Visualizes complex functions using contour plots.
+"""
 from matplotlib import pyplot as plt
 import numpy as np
 from matplotlib import colors
 from typing import Callable
 
 
-def my_function(z: complex) -> complex:
+def compute_polynomial(z: complex) -> complex:
     """
     Computes a specific complex polynomial.
     
@@ -17,7 +20,7 @@ def my_function(z: complex) -> complex:
     return z**3 - 1.0j*z**4 - 3*z**6
 
 
-def f(func: Callable[[complex], complex], arr: np.ndarray) -> np.ndarray:
+def apply_function(func: Callable[[complex], complex], arr: np.ndarray) -> np.ndarray:
     """
     Applies a function to each element of a numpy array.
     
@@ -44,7 +47,7 @@ def main() -> None:
     x, y = np.meshgrid(np.linspace(-size, size, num=n), np.linspace(-size, size, num=n))
     z = x + y*1.0j
 
-    f_z = f(my_function, z)
+    f_z = apply_function(compute_polynomial, z)
 
     # Calculate argument and magnitude
     argument = np.angle(f_z)
