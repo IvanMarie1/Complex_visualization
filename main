@@ -3,28 +3,13 @@ import numpy as np
 from matplotlib import colors
 
 
-def arg(z: complex):
-    # renvoie l'argument d'un nombre entre -pi et pi
-    if z.real == 0:
-        return np.pi/2*np.sign(z.imag)
-    elif z.real<0 and z.imag >= 0:
-        return np.arctan(z.imag/z.real) + np.pi
-    elif z.real<0 and z.imag < 0:
-        return np.arctan(z.imag/z.real) - np.pi
-    return np.arctan(z.imag/z.real)
-
 def ma_fonction(z: complex):
     return z**3 - 1.0j*z**4 - 3*z**6
 
 
 def f(func, arr):
-    new_arr = np.zeros_like(arr)
-    
-    for i_lig in range(len(arr)):
-        for i_col in range(len(arr[i_lig])):
-            new_arr[i_lig][i_col] = func(arr[i_lig][i_col])
-
-    return new_arr
+    vectorized_func = np.vectorize(func)
+    return vectorized_func(arr)
 
 
 def main():
@@ -38,7 +23,7 @@ def main():
 
     f_z = f(ma_fonction, z)
 
-    argument = f(arg, f_z)
+    argument = np.angle(f_z)
     module = np.sqrt(np.square(f_z.real) + np.square(f_z.imag))
     arg_levels = np.linspace(argument.min(), argument.max(), n_levels)
     module_levels = np.linspace(module.min(), module.max(), n_levels)
