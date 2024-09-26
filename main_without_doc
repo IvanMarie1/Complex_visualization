@@ -1,0 +1,55 @@
+from matplotlib import pyplot as plt
+import numpy as np
+from matplotlib import colors
+from typing import Callable
+
+
+def compute_polynomial(z):
+    return z**3 - 1.0j*z**4 - 3*z**6
+
+
+def apply_function(func, arr):
+    vectorized_func = np.vectorize(func)
+    return vectorized_func(arr)
+
+
+def create_grid(size, n):
+    x, y = np.meshgrid(np.linspace(-size, size, num=n), np.linspace(-size, size, num=n))
+    return x + y * 1.0j
+
+
+def calculate_argument_magnitude(f_z):
+    argument = np.angle(f_z)
+    magnitude = np.sqrt(np.square(f_z.real) + np.square(f_z.imag))
+    return argument, magnitude
+
+
+def plot_contours(x, y, argument, magnitude, n_levels):
+    fig, axes = plt.subplots(ncols=2, figsize=(9, 4))
+    arg_levels = np.linspace(argument.min(), argument.max(), n_levels)
+    magnitude_levels = np.linspace(magnitude.min(), magnitude.max(), n_levels)
+    
+    axes[0].contourf(x, y, argument, levels=arg_levels, cmap='plasma')
+    axes[1].contourf(x, y, magnitude, levels=magnitude_levels, norm=colors.PowerNorm(gamma=0.5), cmap='plasma_r')
+
+    axes[0].set_title("$arg(f(z))$")
+    axes[1].set_title("$|f(z)|$")
+    axes[0].set_ylabel("$Im(z)$")
+    axes[0].set_xlabel("$Re(z)$")
+
+    plt.show()
+
+
+def main():
+    n = 2000
+    n_levels = 100 # Number of different colors
+    size = 1
+
+    z = create_grid(size, n)
+    f_z = apply_function(compute_polynomial, z)
+    argument, magnitude = calculate_argument_magnitude(f_z)
+    plot_contours(np.real(z), np.imag(z), argument, magnitude, n_levels)
+
+
+if __name__ == "__main__":
+    main()
