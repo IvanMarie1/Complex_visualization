@@ -28,8 +28,8 @@ def f(func, arr):
 
 
 def main():
-    n = 500
-    n_levels = 1000 # number of different colors
+    n = 2000
+    n_levels = 100 # number of different colors
     size = 1
 
     # create a mini complex-plane
@@ -47,7 +47,7 @@ def main():
     # plot the contours
     fig, axes = plt.subplots(ncols=2, figsize=(9, 4))
     axes[0].contourf(x, y, argument, levels=arg_levels, cmap='plasma')
-    axes[1].contourf(x, y, module, levels=module_levels, norm=colors.LogNorm(vmin=0.000001, vmax=module.max()), cmap='plasma_r')
+    axes[1].contourf(x, y, module, levels=module_levels, norm=colors.PowerNorm(gamma=0.5), cmap='plasma_r')
 
     # set titles
     axes[0].set_title("$arg(f(z))$")
