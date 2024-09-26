@@ -35,6 +35,62 @@ def apply_function(func: Callable[[complex], complex], arr: np.ndarray) -> np.nd
     return vectorized_func(arr)
 
 
+def create_grid(size: int, n: int) -> np.ndarray:
+    """
+    Creates a grid of complex numbers.
+    
+    Parameters:
+    size (int): The size of the grid.
+    n (int): The number of points along each axis.
+
+    Returns:
+    np.ndarray: A grid of complex numbers.
+    """
+    x, y = np.meshgrid(np.linspace(-size, size, num=n), np.linspace(-size, size, num=n))
+    return x + y * 1.0j
+
+
+def calculate_argument_magnitude(f_z: np.ndarray) -> tuple:
+    """
+    Calculates the argument and magnitude of the complex function.
+    
+    Parameters:
+    f_z (np.ndarray): Array of complex function values.
+
+    Returns:
+    tuple: Argument and magnitude arrays.
+    """
+    argument = np.angle(f_z)
+    magnitude = np.sqrt(np.square(f_z.real) + np.square(f_z.imag))
+    return argument, magnitude
+
+
+def plot_contours(x: np.ndarray, y: np.ndarray, argument: np.ndarray, magnitude: np.ndarray, n_levels: int) -> None:
+    """
+    Plots the contours of the complex function.
+    
+    Parameters:
+    x (np.ndarray): Grid of x values.
+    y (np.ndarray): Grid of y values.
+    argument (np.ndarray): Argument of the complex function.
+    magnitude (np.ndarray): Magnitude of the complex function.
+    n_levels (int): Number of levels for the contour plot.
+    """
+    fig, axes = plt.subplots(ncols=2, figsize=(9, 4))
+    arg_levels = np.linspace(argument.min(), argument.max(), n_levels)
+    magnitude_levels = np.linspace(magnitude.min(), magnitude.max(), n_levels)
+    
+    axes[0].contourf(x, y, argument, levels=arg_levels, cmap='plasma')
+    axes[1].contourf(x, y, magnitude, levels=magnitude_levels, norm=colors.PowerNorm(gamma=0.5), cmap='plasma_r')
+
+    axes[0].set_title("$arg(f(z))$")
+    axes[1].set_title("$|f(z)|$")
+    axes[0].set_ylabel("$Im(z)$")
+    axes[0].set_xlabel("$Re(z)$")
+
+    plt.show()
+
+
 def main() -> None:
     """
     Creates and plots the complex function visualization.
@@ -43,33 +99,11 @@ def main() -> None:
     n_levels = 100 # Number of different colors
     size = 1
 
-    # Create a grid of complex numbers
-    x, y = np.meshgrid(np.linspace(-size, size, num=n), np.linspace(-size, size, num=n))
-    z = x + y*1.0j
-
+    z = create_grid(size, n)
     f_z = apply_function(compute_polynomial, z)
+    argument, magnitude = calculate_argument_magnitude(f_z)
+    plot_contours(np.real(z), np.imag(z), argument, magnitude, n_levels)
 
-    # Calculate argument and magnitude
-    argument = np.angle(f_z)
-    magnitude = np.sqrt(np.square(f_z.real) + np.square(f_z.imag))
-    arg_levels = np.linspace(argument.min(), argument.max(), n_levels)
-    magnitude_levels = np.linspace(magnitude.min(), magnitude.max(), n_levels)
-
-
-    # Plot the contours
-    fig, axes = plt.subplots(ncols=2, figsize=(9, 4))
-    axes[0].contourf(x, y, argument, levels=arg_levels, cmap='plasma')
-    axes[1].contourf(x, y, magnitude, levels=magnitude_levels, norm=colors.PowerNorm(gamma=0.5), cmap='plasma_r')
-
-    # Set titles
-    axes[0].set_title("$arg(f(z))$")
-    axes[1].set_title("$|f(z)|$")
-
-    # Label axes
-    axes[0].set_ylabel("$Im(z)$")
-    axes[0].set_xlabel("$Re(z)$")
-
-    plt.show()
 
 if __name__ == "__main__":
     main()
